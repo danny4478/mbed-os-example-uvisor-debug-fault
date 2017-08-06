@@ -37,10 +37,40 @@ static uint32_t get_version(void) {
     return 0;
 }
 
-static void halt_error(int reason) {
-    printf("***** uVisor debug box example *****\n");
-    printf("Tried to access address 0xFFFFFFFF which is not allowed\n");
-	printf("Bye Bye Now!!!!!!\n");
+static void halt_error(THaltError reason, const THaltInfo *halt_info) {
+    const char *exception_stack[] = {"R0", "R1", "R2", "R3", "R12", "LR", "PC", "xPSR"};
+
+    printf("Failed with an error code: 0x%08x\r\n\r\n", reason);
+
+	if (halt_info == NULL) {
+		return;
+	}
+
+    if ((halt_info->valid_data & HALT_INFO_STACK_FRAME)) {
+        printf("Exception stack frame:\r\n");
+        for (int i = sizeof(exception_stack) / sizeof(exception_stack[0]) - 1; i >= 0; i--)
+        {
+            printf("SP[%02d]: 0x%08x | %s\r\n", i, ((uint32_t *)&halt_info->stack_frame)[i], exception_stack[i]);
+        }
+        printf("\r\n");
+    }
+
+    if ((halt_info->valid_data & HALT_INFO_REGISTERS)) {
+        printf("Registers after fault:\r\n");
+        printf("LR:      0x%08x\r\n", halt_info->lr);
+        printf("IPSR:    0x%08x\r\n", halt_info->ipsr);
+        printf("CONTROL: 0x%08x\r\n", halt_info->control);
+        printf("\r\n");
+
+        printf("Fault registers:\r\n");
+        printf("CFSR:  0x%08x\r\n", halt_info->cfsr);
+        printf("HFSR:  0x%08x\r\n", halt_info->hfsr);
+        printf("DFSR:  0x%08x\r\n", halt_info->dfsr);
+        printf("AFSR:  0x%08x\r\n", halt_info->afsr);
+        printf("MMFAR: 0x%08x\r\n", halt_info->mmfar);
+        printf("BFAR:  0x%08x\r\n", halt_info->bfar);
+        printf("\r\n");
+    }
 }
 
 /* Debug box driver -- Version 0 */
