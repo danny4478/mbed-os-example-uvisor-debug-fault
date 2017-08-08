@@ -18,12 +18,6 @@
 #include "mbed.h"
 #include "main-hw.h"
 
-/* Create ACLs for main box. */
-MAIN_ACL(g_main_acl);
-
-/* Enable uVisor. */
-UVISOR_SET_MODE_ACL(UVISOR_ENABLED, g_main_acl);
-UVISOR_SET_PAGE_HEAP(8 * 1024, 5);
 
 /* Targets with an ARMv7-M MPU needs this space adjustment to prevent a runtime
  * memory overflow error. The code below has been output directly by uVisor. */
@@ -33,21 +27,26 @@ uint8_t __attribute__((section(".keep.uvisor.bss.boxes"), aligned(32))) __boxes_
 
 /* Configure box 0 as the debug box. */
 
-static uint32_t get_version(void) {
-    return 0;
-}
 
 static void halt_error(int reason) {
     printf("***** uVisor debug box example *****\n");
     printf("Tried to access address 0xFFFFFFFF which is not allowed\n");
 	printf("Bye Bye Now!!!!!!\n");
+	//printf("Running 1\n");
 }
 
-/* Debug box driver -- Version 0 */
-static TUvisorDebugDriver const g_driver = {
-    get_version,
-    halt_error
-};
+/* Debug box driver -- Version 1 */
+UVISOR_SET_DEBUG_BOX(halt_error);
+
+
+/* Create ACLs for main box. */
+MAIN_ACL(g_main_acl);
+
+/* Enable uVisor. */
+//UVISOR_SET_MODE_ACL(UVISOR_ENABLED, g_main_acl);
+UVISOR_SET_MODE_ACL_DBGBOX(UVISOR_ENABLED, g_main_acl, &g_driver);
+UVISOR_SET_PAGE_HEAP(8 * 1024, 5);
+
 
 #define BAD_BAD_ADDR (*((volatile unsigned long *) (0xFFFFFFFF)))
 
