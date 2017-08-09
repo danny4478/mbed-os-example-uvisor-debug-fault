@@ -52,8 +52,10 @@ UVISOR_SET_PAGE_HEAP(8 * 1024, 5);
 
 int main(void)
 {
+    printf("\r\n***** uVisor debug-fault example *****\r\n");
+
     /* Register the debug box with uVisor. */
-    uvisor_debug_init(&g_driver);
+    //uvisor_debug_init(&g_driver);
     while (1){
         BAD_BAD_ADDR = 13;
     }
