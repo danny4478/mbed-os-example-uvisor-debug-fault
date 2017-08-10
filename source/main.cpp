@@ -25,26 +25,23 @@
 uint8_t __attribute__((section(".keep.uvisor.bss.boxes"), aligned(32))) __boxes_overhead[8064];
 #endif
 
-/* Configure box 0 as the debug box. */
 
-
-static void halt_error(int reason) {
+/* Declaring a function to be used as halt_error function for the debug box. */
+static void example_halt_error(int reason) {
     printf("***** uVisor debug box example *****\n");
-    printf("Tried to access address 0xFFFFFFFF which is not allowed\n");
+    printf("Tried to access address 0xFFFFFFFF which is not allowed!!\n");
 	printf("Bye Bye Now!!!!!!\n");
-	//printf("Running 1\n");
 }
 
-/* Debug box driver -- Version 1 */
-UVISOR_SET_DEBUG_BOX(halt_error);
+/* Declare g_debug_driver and use example_halt_error() as its halt_error() function */
+UVISOR_SET_DEBUG_BOX(example_halt_error);
 
 
 /* Create ACLs for main box. */
 MAIN_ACL(g_main_acl);
 
-/* Enable uVisor. */
-//UVISOR_SET_MODE_ACL(UVISOR_ENABLED, g_main_acl);
-UVISOR_SET_MODE_ACL_DBGBOX(UVISOR_ENABLED, g_main_acl, &g_driver);
+/* Enable uVisor and register the public box to the debug driver */
+UVISOR_SET_MODE_ACL_DBGBOX(UVISOR_ENABLED, g_main_acl, &g_debug_driver);
 UVISOR_SET_PAGE_HEAP(8 * 1024, 5);
 
 
@@ -54,8 +51,6 @@ int main(void)
 {
     printf("\r\n***** uVisor debug-fault example *****\r\n");
 
-    /* Register the debug box with uVisor. */
-    //uvisor_debug_init(&g_driver);
     while (1){
         BAD_BAD_ADDR = 13;
     }
