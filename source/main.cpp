@@ -19,13 +19,6 @@
 #include "main-hw.h"
 
 
-/* Targets with an ARMv7-M MPU needs this space adjustment to prevent a runtime
- * memory overflow error. The code below has been output directly by uVisor. */
-#if defined(TARGET_EFM32GG_STK3700) || defined(TARGET_DISCO_F429ZI)
-uint8_t __attribute__((section(".keep.uvisor.bss.boxes"), aligned(32))) __boxes_overhead[8064];
-#endif
-
-
 /* Declaring a function to be used as halt_error function for the debug box. */
 static void example_halt_error(int reason) {
     printf("***** uVisor debug box example *****\n");
@@ -43,6 +36,13 @@ MAIN_ACL(g_main_acl);
 /* Enable uVisor and register the public box to the debug driver */
 UVISOR_SET_MODE_ACL_DBGBOX(UVISOR_ENABLED, g_main_acl);
 UVISOR_SET_PAGE_HEAP(8 * 1024, 5);
+
+
+/* Targets with an ARMv7-M MPU needs this space adjustment to prevent a runtime
+ * memory overflow error. The code below has been output directly by uVisor. */
+#if defined(TARGET_EFM32GG_STK3700) || defined(TARGET_DISCO_F429ZI)
+uint8_t __attribute__((section(".keep.uvisor.bss.boxes"), aligned(32))) __boxes_overhead[8064];
+#endif
 
 
 #define BAD_BAD_ADDR (*((volatile unsigned long *) (0xFFFFFFFF)))
