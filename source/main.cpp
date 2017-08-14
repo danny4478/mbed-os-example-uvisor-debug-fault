@@ -26,7 +26,7 @@ static void example_halt_error(int reason) {
 	printf("Bye Bye Now!!!!!!\n");
 }
 
-/* Declare g_debug_driver and use example_halt_error() as its halt_error() function */
+/* Create a valid debug driver struct and use example_halt_error() as its halt_error() function */
 UVISOR_GENERATE_DEBUG_DRIVER(example_halt_error);
 
 
