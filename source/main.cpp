@@ -29,19 +29,19 @@ uint8_t __attribute__((section(".keep.uvisor.bss.boxes"), aligned(32))) __boxes_
 /* Declaring a function to be used as halt_error function for the debug box. */
 static void example_halt_error(int reason) {
     printf("***** uVisor debug box example *****\n");
-    printf("Tried to access address 0xFFFFFFFF which is not allowed!!\n");
+    printf("Tried to access address 0xFFFFFFFF which is not allowed!!!!\n");
 	printf("Bye Bye Now!!!!!!\n");
 }
 
 /* Declare g_debug_driver and use example_halt_error() as its halt_error() function */
-UVISOR_SET_DEBUG_BOX(example_halt_error);
+UVISOR_GENERATE_DEBUG_DRIVER(example_halt_error);
 
 
 /* Create ACLs for main box. */
 MAIN_ACL(g_main_acl);
 
 /* Enable uVisor and register the public box to the debug driver */
-UVISOR_SET_MODE_ACL_DBGBOX(UVISOR_ENABLED, g_main_acl, &g_debug_driver);
+UVISOR_SET_MODE_ACL_DBGBOX(UVISOR_ENABLED, g_main_acl);
 UVISOR_SET_PAGE_HEAP(8 * 1024, 5);
 
 
